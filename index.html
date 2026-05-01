@@ -198,6 +198,15 @@
   }
   .month-box:hover { background: rgba(30, 64, 175, 0.05); }
 
+  .year-display {
+    font-family: 'Nanum Pen Script', cursive;
+    font-size: 42px;
+    color: var(--ink-blue);
+    letter-spacing: 1px;
+    margin-right: 4px;
+    font-weight: 700;
+  }
+
   .board-title {
     font-family: 'Nanum Pen Script', cursive;
     font-size: 44px;
@@ -703,6 +712,7 @@
     .whiteboard-inner { padding: 16px 12px 20px; }
     .board-title { font-size: 28px; letter-spacing: 1px; }
     .month-box { width: 44px; height: 44px; font-size: 28px; }
+    .year-display { font-size: 30px; }
     .day-header { font-size: 18px; padding: 6px 8px; }
     .day-cell { min-height: 80px; padding: 4px; }
     .day-number { font-size: 16px; }
@@ -856,6 +866,7 @@
       <div class="board-title-row">
         <button class="nav-btn" id="prevMonthBtn2">‹</button>
         <div class="month-selector">
+          <div class="year-display" id="yearDisplay">2026</div>
           <div class="month-box" id="monthBox">5</div>
           <div class="board-title">월중행사 및 계획표</div>
         </div>
@@ -1335,6 +1346,7 @@ function renderCalendar() {
   const month = state.currentDate.getMonth();
 
   document.getElementById('monthBox').textContent = month + 1;
+  document.getElementById('yearDisplay').textContent = year;
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
