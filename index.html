@@ -1228,9 +1228,9 @@ let state = {
   memos: {},
   webhookUrl: '',
   memberEmails: {},
-  // Supabase 실시간 공유
-  supabaseUrl: '',
-  supabaseKey: '',
+  // Supabase 실시간 공유 (회사 정보 미리 입력됨)
+  supabaseUrl: 'https://idpwhjzenluzoqwkvvic.supabase.co',
+  supabaseKey: 'sb_publishable_6rCkVguWIMyOdeW8dYy84w_l5nMlD0f',
   supabaseClient: null,
   isOnline: false,
   currentUser: ''  // 현재 사용자 이름 (누가 등록했는지 표시용)
@@ -1266,14 +1266,19 @@ async function loadMemos() {
 
 // 설정 (Webhook URL + 팀원 이메일) 저장/불러오기
 async function loadSettings() {
+  // 코드에 박혀있는 기본 Supabase 정보 (회사 정보)
+  const DEFAULT_SUPABASE_URL = state.supabaseUrl;
+  const DEFAULT_SUPABASE_KEY = state.supabaseKey;
+
   try {
     const r = await window.storage.get('teamcal:settings');
     if (r && r.value) {
       const s = JSON.parse(r.value);
       state.webhookUrl = s.webhookUrl || '';
       state.memberEmails = s.memberEmails || {};
-      state.supabaseUrl = s.supabaseUrl || '';
-      state.supabaseKey = s.supabaseKey || '';
+      // Supabase URL/Key는 저장된 값이 있으면 사용, 없으면 코드 기본값 유지
+      state.supabaseUrl = s.supabaseUrl || DEFAULT_SUPABASE_URL;
+      state.supabaseKey = s.supabaseKey || DEFAULT_SUPABASE_KEY;
       state.currentUser = s.currentUser || '';
       // 기본 팀원 이메일을 state에 반영
       TEAM_MEMBERS.forEach(m => {
@@ -1282,6 +1287,7 @@ async function loadSettings() {
         }
       });
     }
+    // 저장된 설정이 없어도 코드의 기본 Supabase 정보가 그대로 유지됨
   } catch (e) {
     state.webhookUrl = '';
     state.memberEmails = {};
@@ -2230,6 +2236,15 @@ async function init() {
   updateUserBadge();
   updateOnlineStatus();
   requestNotificationPermission();
+
+  // 첫 접속 시 사용자 이름 선택 안내
+  if (!state.currentUser) {
+    setTimeout(() => {
+      showToast('⚙ 설정에서 본인 이름을 선택해주세요', '👋');
+      // 자동으로 설정 화면 열기
+      setTimeout(() => openSettings(), 1500);
+    }, 800);
+  }
 }
 
 init();
